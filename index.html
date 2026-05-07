@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penjumlahan dan Pengurangan Bilangan Bulat</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; 
+            margin: 0;
+            background-color: #f0f2f5;
+            padding: 20px; 
+        }
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            
+            min-width: 350px; 
+            max-width: 95vw; 
+            width: fit-content; 
+            
+            transition: all 0.3s ease; 
+        }
+        .settings {
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+        .timer {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .question {
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            margin: 30px 0;
+            font-weight: 800;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+        input[type="number"] {
+            width: 90%;
+            max-width: 300px;
+            padding: 12px;
+            font-size: 1.8rem;
+            text-align: center;
+            border: 3px solid #dfe6e9;
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .correct { border-color: #2ecc71 !important; background-color: #f0fff4; color: #27ae60; }
+        .wrong { border-color: #e74c3c !important; background-color: #fff5f5; color: #c0392b; }
+        
+        .btn {
+            margin-top: 25px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            display: none;
+            width: 100%;
+        }
+        .btn:hover { background-color: #2980b9; transform: translateY(-2px); }
+        .status-text { margin-top: 15px; font-weight: bold; font-size: 1.1rem; }
+        
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="settings">
+        <b>Rentang:</b> 
+        <input type="number" id="minRange" value="-10" style="width: 70px; font-size: 1rem; border: 1px solid #ccc; padding: 5px;"> s/d 
+        <input type="number" id="maxRange" value="10" style="width: 70px; font-size: 1rem; border: 1px solid #ccc; padding: 5px;"> <br>
+        <div style="margin-top: 10px;">
+            <b>Waktu:</b> <input type="number" id="timeSetting" value="5" style="width: 50px; font-size: 1rem; border: 1px solid #ccc; padding: 5px;"> detik
+        </div>
+    </div>
+
+    <div class="timer">Sisa Waktu: <span id="timeLeft">0</span>s</div>
+    <div class="question" id="questionText">Siap?</div>
+    
+    <input type="number" id="answerInput" placeholder="Jawab..." onkeydown="handleEnter(event)">
+    
+    <div id="statusText" class="status-text"></div>
+    <button id="nextBtn" class="btn" onclick="startGame()">Soal Berikutnya</button>
+    <button id="startBtn" class="btn" style="display:inline-block;" onclick="startGame()">Mulai Game</button>
+</div>
+
+<script>
+    let correctAnswer;
+    let timer;
+    let timeLeft;
+
+    function startGame() {
+        const min = parseInt(document.getElementById('minRange').value) || 0;
+        const max = parseInt(document.getElementById('maxRange').value) || 100;
+        const setTime = parseInt(document.getElementById('timeSetting').value) || 5;
+        
+        const input = document.getElementById('answerInput');
+        const status = document.getElementById('statusText');
+        input.value = '';
+        input.className = '';
+        input.disabled = false;
+        input.focus();
+        status.innerText = '';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('startBtn').style.display = 'none';
+
+        const num1 = Math.floor(Math.random() * (max - min + 1)) + min;
+        const num2 = Math.floor(Math.random() * (max - min + 1)) + min;
+        const isPlus = Math.random() > 0.5;
+        const operator = isPlus ? '+' : '-';
+        
+        correctAnswer = isPlus ? num1 + num2 : num1 - num2;
+        
+        let displayNum2 = num2 < 0 ? `(${num2})` : num2;
+        document.getElementById('questionText').innerText = `${num1} ${operator} ${displayNum2}`;
+
+        timeLeft = setTime;
+        document.getElementById('timeLeft').innerText = timeLeft;
+        
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timeLeft').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                endByTimeout();
+            }
+        }, 1000);
+    }
+
+    function checkAnswer() {
+        clearInterval(timer);
+        const input = document.getElementById('answerInput');
+        const userAnswer = parseInt(input.value);
+        const status = document.getElementById('statusText');
+
+        input.disabled = true;
+
+        if (userAnswer === correctAnswer) {
+            input.classList.add('correct');
+            status.innerText = "Benar! Bagus Sekali.";
+            status.style.color = "#27ae60";
+        } else {
+            input.classList.add('wrong');
+            status.innerText = `Salah! Jawaban: ${correctAnswer}`;
+            status.style.color = "#c0392b";
+        }
+        document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function endByTimeout() {
+        clearInterval(timer);
+        const input = document.getElementById('answerInput');
+        const status = document.getElementById('statusText');
+        
+        input.disabled = true;
+        input.classList.add('wrong');
+        status.innerText = `Waktu Habis! Jawaban: ${correctAnswer}`;
+        status.style.color = "#c0392b";
+        document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            if (document.getElementById('answerInput').value !== "") {
+                checkAnswer();
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
