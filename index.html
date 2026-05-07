@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Matematika Bilangan Bulat</title>
+    <title>Penjumlahan dan Pengurangan Bilangan Bulat</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -49,7 +49,6 @@
             border-radius: 8px;
             outline: none;
         }
-        /* State Warna */
         .correct { border-color: #2ecc71 !important; background-color: #e8f8f5; color: #27ae60; }
         .wrong { border-color: #e74c3c !important; background-color: #fdedec; color: #c0392b; }
         
@@ -62,7 +61,7 @@
             color: white;
             border: none;
             border-radius: 5px;
-            display: none; /* Sembunyi di awal */
+            display: none; 
         }
         .btn:hover { background-color: #2980b9; }
         .status-text { margin-top: 10px; font-weight: bold; }
@@ -97,7 +96,6 @@
         const max = parseInt(document.getElementById('maxRange').value);
         const setTime = parseInt(document.getElementById('timeSetting').value);
         
-        // Reset UI
         const input = document.getElementById('answerInput');
         const status = document.getElementById('statusText');
         input.value = '';
@@ -108,7 +106,6 @@
         document.getElementById('nextBtn').style.display = 'none';
         document.getElementById('startBtn').style.display = 'none';
 
-        // Generate Soal
         const num1 = Math.floor(Math.random() * (max - min + 1)) + min;
         const num2 = Math.floor(Math.random() * (max - min + 1)) + min;
         const isPlus = Math.random() > 0.5;
@@ -116,11 +113,9 @@
         
         correctAnswer = isPlus ? num1 + num2 : num1 - num2;
         
-        // Tampilkan soal (handle visual untuk angka negatif agar tidak double minus --)
         let displayNum2 = num2 < 0 ? `(${num2})` : num2;
         document.getElementById('questionText').innerText = `${num1} ${operator} ${displayNum2}`;
 
-        // Timer Logic
         timeLeft = setTime;
         document.getElementById('timeLeft').innerText = timeLeft;
         
